@@ -1,8 +1,0 @@
-{
-  "/_global-error/page": "/_global-error",
-  "/_not-found/page": "/_not-found",
-  "/api/compile/route": "/api/compile",
-  "/api/discovery/route": "/api/discovery",
-  "/api/sandbox/route": "/api/sandbox",
-  "/page": "/"
-}
