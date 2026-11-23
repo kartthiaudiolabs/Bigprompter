@@ -11,25 +11,25 @@ import {
 // Helper to detect domain from raw prompt
 export function detectDomain(rawText: string): DomainCategory {
   const lower = rawText.toLowerCase();
-  if (lower.match(/code|sql|python|javascript|typescript|bug|repo|react|backend|api|database|git|pr\b/)) {
+  if (lower.match(/\b(code|coding|sql|python|javascript|typescript|bug|repo|react|backend|api|apis|database|git|pull\s*request|pr)\b/)) {
     return 'software-engineering';
   }
-  if (lower.match(/copy|marketing|headline|landing|ad|email|seo|blog|sales|funnel|conversion/)) {
+  if (lower.match(/\b(copy|marketing|headline|landing|ad|email|seo|blog|sales|funnel|conversion)\b/)) {
     return 'copywriting-marketing';
   }
-  if (lower.match(/support|ticket|helpdesk|customer|refund|complaint|faq|triage|csat/)) {
+  if (lower.match(/\b(support|ticket|helpdesk|customer|refund|complaint|faq|triage|csat)\b/)) {
     return 'customer-support';
   }
-  if (lower.match(/data|analytics|dashboard|chart|metrics|kpi|statistics|excel|csv/)) {
+  if (lower.match(/\b(data|analytics|dashboard|chart|metrics|kpi|statistics|excel|csv)\b/)) {
     return 'data-analytics';
   }
-  if (lower.match(/music|audio|mix|master|song|chord|eq|sound|video|design|animation/)) {
+  if (lower.match(/\b(music|audio|mix|master|song|chord|eq|sound|video|design|animation)\b/)) {
     return 'creative-production';
   }
-  if (lower.match(/contract|legal|gdpr|compliance|liability|privacy|law|audit|nda/)) {
+  if (lower.match(/\b(contract|legal|gdpr|compliance|liability|privacy|law|audit|nda)\b/)) {
     return 'finance-legal';
   }
-  if (lower.match(/health|medical|clinic|doctor|patient|pharma|bio|scientific/)) {
+  if (lower.match(/\b(health|medical|clinic|doctor|patient|pharma|bio|scientific)\b/)) {
     return 'healthcare-science';
   }
   return 'general-assistant';

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import {
@@ -25,7 +27,10 @@ const INITIAL_RAW_PROMPT = 'I want an autonomous code review bot that finds secu
 export const App: React.FC = () => {
   const [userMode, setUserMode] = useState<UserMode>('professional');
   const [apiKey, setApiKey] = useState<string>(() => {
-    return localStorage.getItem('promptexa_gemini_api_key') || '';
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('promptexa_gemini_api_key') || '';
+    }
+    return '';
   });
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -33,12 +38,14 @@ export const App: React.FC = () => {
 
   // Core Session State
   const [session, setSession] = useState<PromptProjectSession>(() => {
-    const saved = localStorage.getItem('promptexa_active_session');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('promptexa_active_session');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error(e);
+        }
       }
     }
 
