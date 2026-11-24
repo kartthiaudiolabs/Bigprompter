@@ -21,8 +21,29 @@ import { ConversationalWorkspace } from './components/ConversationalWorkspace';
 import { ArtefactStudio } from './components/ArtefactStudio';
 import { SettingsModal } from './components/SettingsModal';
 import { TemplateModal } from './components/TemplateModal';
+import { AuthModal } from './components/AuthModal';
+import { ProjectWorkspaceDrawer } from './components/ProjectWorkspaceDrawer';
+import { Project, ProjectService } from '@/modules/projects';
+import { AuthUser, AuthService } from '@/modules/auth';
 
 const INITIAL_RAW_PROMPT = 'I want an autonomous code review bot that finds security flaws and suggests clean refactors.';
+
+const DEFAULT_PROJECT: Project = {
+  id: 'proj-default',
+  userId: 'default-user',
+  title: 'Core AI Engineering Workspace',
+  description: 'Primary isolated scope for enterprise prompt architectures and evaluation.',
+  objectives: [
+    'Design deterministic prompt contracts',
+    'Enforce prompt injection boundaries',
+    'Benchmark multi-model outputs'
+  ],
+  requirements: [],
+  references: [],
+  isArchived: false,
+  createdAt: '2026-11-24T00:00:00.000Z',
+  updatedAt: '2026-11-24T00:00:00.000Z',
+};
 
 export const App: React.FC = () => {
   const [userMode, setUserMode] = useState<UserMode>('professional');
@@ -33,8 +54,26 @@ export const App: React.FC = () => {
     return '';
   });
 
+  // Auth & Project Management State (Phase 1)
+  const [authUser, setAuthUser] = useState<AuthUser | null>(() => {
+    if (typeof window !== 'undefined') {
+      return AuthService.getStoredUser();
+    }
+    return null;
+  });
+
+  const [activeProject, setActiveProject] = useState<Project>(() => {
+    if (typeof window !== 'undefined') {
+      const list = ProjectService.getProjects();
+      if (list && list.length > 0) return list[0];
+    }
+    return DEFAULT_PROJECT;
+  });
+
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isTemplateOpen, setIsTemplateOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isProjectDrawerOpen, setIsProjectDrawerOpen] = useState(false);
 
   // Core Session State
   const [session, setSession] = useState<PromptProjectSession>(() => {
@@ -226,6 +265,11 @@ export const App: React.FC = () => {
     });
   };
 
+  const handleLogout = async () => {
+    await AuthService.logout();
+    setAuthUser(null);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-[#07090e] text-slate-100 overflow-hidden font-sans">
       {/* Top Navigation */}
@@ -236,6 +280,11 @@ export const App: React.FC = () => {
         onOpenSettings={() => setIsSettingsOpen(true)}
         onNewSession={handleNewSession}
         hasApiKey={Boolean(apiKey)}
+        activeProject={activeProject}
+        onOpenProjects={() => setIsProjectDrawerOpen(true)}
+        authUser={authUser}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main Split Layout: Left Conversational Workspace & Right Artefact Studio */}
@@ -279,6 +328,25 @@ export const App: React.FC = () => {
         isOpen={isTemplateOpen}
         onClose={() => setIsTemplateOpen(false)}
         onSelectTemplate={handleSelectTemplate}
+      />
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={(user) => setAuthUser(user)}
+      />
+
+      <ProjectWorkspaceDrawer
+        isOpen={isProjectDrawerOpen}
+        onClose={() => setIsProjectDrawerOpen(false)}
+        activeProject={activeProject}
+        onSelectProject={(proj) => setActiveProject(proj)}
+        onProjectsChange={() => {
+          const list = ProjectService.getProjects();
+          if (list.length > 0 && !list.find(p => p.id === activeProject.id)) {
+            setActiveProject(list[0]);
+          }
+        }}
       />
     </div>
   );

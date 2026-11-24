@@ -56,3 +56,32 @@ export const SandboxExecutionRequestSchema = z.object({
   apiKey: z.string().optional()
 });
 export type SandboxExecutionRequest = z.infer<typeof SandboxExecutionRequestSchema>;
+
+// Phase 1: Authentication & Workspace Schemas
+export const RegisterRequestSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  fullName: z.string().min(2, 'Full name must be at least 2 characters').default('AI Engineer')
+});
+export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
+
+export const LoginRequestSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters')
+});
+export type LoginRequest = z.infer<typeof LoginRequestSchema>;
+
+export const CreateProjectSchema = z.object({
+  title: z.string().min(2, 'Project title must be at least 2 characters').max(100),
+  description: z.string().max(500).optional(),
+  objectives: z.array(z.string()).optional()
+});
+export type CreateProjectInput = z.infer<typeof CreateProjectSchema>;
+
+export const UpdateProjectSchema = z.object({
+  title: z.string().min(2).max(100).optional(),
+  description: z.string().max(500).optional(),
+  objectives: z.array(z.string()).optional(),
+  isArchived: z.boolean().optional()
+});
+export type UpdateProjectInput = z.infer<typeof UpdateProjectSchema>;
