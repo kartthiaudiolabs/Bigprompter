@@ -84,7 +84,7 @@ export interface PromptProjectSession {
   level: EngineeringLevel;
   targetModel: TargetModel;
   userMode: UserMode;
-  stage: 'input' | 'discovery' | 'compiled';
+  stage: 'input' | 'discovery' | 'architecture' | 'compiled';
   questions: DiscoveryQuestion[];
   currentVersion?: PromptVersion;
   history: PromptVersion[];

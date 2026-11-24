@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Sparkles,
   ArrowRight,
@@ -11,16 +11,20 @@ import {
   AlertCircle,
   RefreshCw,
   Zap,
-  ChevronRight
+  ChevronRight,
+  AlertTriangle,
+  FileCheck,
+  Check
 } from 'lucide-react';
 import {
   EngineeringLevel,
   TargetModel,
   UserMode,
-  DiscoveryQuestion,
-  DomainCategory,
   PromptProjectSession
 } from '../types';
+import { extractRequirementBaseline, RequirementBaseline } from '@/modules/requirements';
+import { designPromptArchitecture, PromptArchitectureSchematic } from '@/modules/architecture';
+import { PromptArchitectureView } from './PromptArchitectureView';
 
 interface ConversationalWorkspaceProps {
   session: PromptProjectSession;
@@ -33,6 +37,7 @@ interface ConversationalWorkspaceProps {
   onApplyAllDefaults: () => void;
   onCompilePrompt: () => void;
   onResetToDiscovery: () => void;
+  onStageChange: (stage: 'input' | 'discovery' | 'architecture' | 'compiled') => void;
   userMode: UserMode;
 }
 
@@ -47,12 +52,40 @@ export const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = (
   onApplyAllDefaults,
   onCompilePrompt,
   onResetToDiscovery,
+  onStageChange,
   userMode,
 }) => {
   const [activeCustomInputs, setActiveCustomInputs] = useState<Record<string, boolean>>({});
+  const [schematic, setSchematic] = useState<PromptArchitectureSchematic | null>(null);
+
+  // Real-time requirement baseline and contradiction detection (Phase 2)
+  const baseline: RequirementBaseline = useMemo(() => {
+    return extractRequirementBaseline(session.rawInput, session.domain);
+  }, [session.rawInput, session.domain]);
 
   const toggleCustomInput = (qId: string) => {
     setActiveCustomInputs(prev => ({ ...prev, [qId]: !prev[qId] }));
+  };
+
+  const handleOpenArchitecture = () => {
+    const arch = designPromptArchitecture(
+      session.rawInput,
+      session.domain,
+      session.level,
+      session.targetModel
+    );
+    setSchematic(arch);
+    onStageChange('architecture');
+  };
+
+  const handleToggleArchitectureBlock = (blockId: string) => {
+    if (!schematic) return;
+    setSchematic({
+      ...schematic,
+      blocks: schematic.blocks.map(b =>
+        b.id === blockId && !b.isMandatory ? { ...b, isEnabled: !b.isEnabled } : b
+      ),
+    });
   };
 
   const levelDetails: Record<EngineeringLevel, { title: string; desc: string; badgeColor: string }> = {
@@ -72,64 +105,86 @@ export const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = (
   return (
     <div className="flex flex-col h-full bg-[#090c13] border-r border-surface-100 overflow-y-auto custom-scrollbar">
       {/* Step Progress Tracker */}
-      <div className="px-5 py-4 border-b border-surface-100/70 bg-surface-300/60 sticky top-0 z-20 backdrop-blur-md">
+      <div className="px-5 py-3.5 border-b border-surface-100/70 bg-surface-300/60 sticky top-0 z-20 backdrop-blur-md">
         <div className="flex items-center justify-between text-xs text-slate-400">
-          <div className="flex items-center gap-2">
+          <button
+            onClick={() => onStageChange('input')}
+            className={`flex items-center gap-1.5 transition-colors ${
+              session.stage === 'input' ? 'text-cyan-300 font-semibold' : 'hover:text-slate-200'
+            }`}
+          >
             <span
-              className={`w-5 h-5 rounded-full flex items-center justify-center font-mono font-bold text-[11px] ${
-                session.stage === 'input'
-                  ? 'bg-cyan-500 text-slate-950 font-black'
-                  : 'bg-surface-100 text-slate-300'
+              className={`w-5 h-5 rounded-full flex items-center justify-center font-mono font-bold text-[10px] ${
+                session.stage === 'input' ? 'bg-cyan-500 text-slate-950 font-black' : 'bg-surface-100 text-slate-300'
               }`}
             >
               1
             </span>
-            <span className={session.stage === 'input' ? 'text-cyan-300 font-semibold' : ''}>
-              Input & Scope
-            </span>
-          </div>
+            <span className="hidden sm:inline">Input</span>
+          </button>
 
           <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
 
-          <div className="flex items-center gap-2">
+          <button
+            disabled={session.stage === 'input'}
+            onClick={() => onStageChange('discovery')}
+            className={`flex items-center gap-1.5 transition-colors disabled:opacity-40 ${
+              session.stage === 'discovery' ? 'text-cyan-300 font-semibold' : 'hover:text-slate-200'
+            }`}
+          >
             <span
-              className={`w-5 h-5 rounded-full flex items-center justify-center font-mono font-bold text-[11px] ${
-                session.stage === 'discovery'
-                  ? 'bg-cyan-500 text-slate-950 font-black'
-                  : session.stage === 'compiled'
-                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                  : 'bg-surface-100 text-slate-300'
+              className={`w-5 h-5 rounded-full flex items-center justify-center font-mono font-bold text-[10px] ${
+                session.stage === 'discovery' ? 'bg-cyan-500 text-slate-950 font-black' : 'bg-surface-100 text-slate-300'
               }`}
             >
               2
             </span>
-            <span className={session.stage === 'discovery' ? 'text-cyan-300 font-semibold' : ''}>
-              Discovery Questionnaire
-            </span>
-          </div>
+            <span className="hidden sm:inline">Discovery</span>
+          </button>
 
           <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
 
-          <div className="flex items-center gap-2">
+          <button
+            disabled={session.stage === 'input'}
+            onClick={handleOpenArchitecture}
+            className={`flex items-center gap-1.5 transition-colors disabled:opacity-40 ${
+              session.stage === 'architecture' ? 'text-indigo-300 font-semibold' : 'hover:text-slate-200'
+            }`}
+          >
             <span
-              className={`w-5 h-5 rounded-full flex items-center justify-center font-mono font-bold text-[11px] ${
-                session.stage === 'compiled'
-                  ? 'bg-emerald-500 text-slate-950 font-black'
-                  : 'bg-surface-100 text-slate-300'
+              className={`w-5 h-5 rounded-full flex items-center justify-center font-mono font-bold text-[10px] ${
+                session.stage === 'architecture' ? 'bg-indigo-500 text-white font-black' : 'bg-surface-100 text-slate-300'
               }`}
             >
               3
             </span>
-            <span className={session.stage === 'compiled' ? 'text-emerald-300 font-semibold' : ''}>
-              L1–L4 Output
+            <span className="hidden sm:inline">Schematic</span>
+          </button>
+
+          <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+
+          <button
+            disabled={session.stage !== 'compiled'}
+            onClick={() => onStageChange('compiled')}
+            className={`flex items-center gap-1.5 transition-colors disabled:opacity-40 ${
+              session.stage === 'compiled' ? 'text-emerald-300 font-semibold' : 'hover:text-slate-200'
+            }`}
+          >
+            <span
+              className={`w-5 h-5 rounded-full flex items-center justify-center font-mono font-bold text-[10px] ${
+                session.stage === 'compiled' ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-surface-100 text-slate-300'
+              }`}
+            >
+              4
             </span>
-          </div>
+            <span className="hidden sm:inline">Deliverable</span>
+          </button>
         </div>
       </div>
 
       <div className="p-5 sm:p-6 space-y-6">
         {/* =========================================================
-            STAGE 1: RAW INPUT & ARCHITECTURE SETTINGS
+            STAGE 1: RAW INPUT & REQUIREMENT BASELINE
         ========================================================= */}
         {session.stage === 'input' && (
           <div className="space-y-6 animate-fade-in">
@@ -171,7 +226,7 @@ export const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = (
                 value={session.rawInput}
                 onChange={(e) => onRawInputChange(e.target.value)}
                 placeholder="Example: I need a system prompt for a code review assistant that catches security flaws, enforces clean architecture, and produces structured markdown reports with severity tags..."
-                rows={5}
+                rows={4}
                 className="w-full rounded-xl bg-surface-200 border border-slate-800 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-slate-100 text-sm p-4 placeholder-slate-500 outline-none transition-all resize-none font-sans leading-relaxed"
               />
               {session.rawInput.length > 0 && (
@@ -180,6 +235,44 @@ export const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = (
                 </div>
               )}
             </div>
+
+            {/* Phase 2: Real-Time Requirement Baseline & Contradiction Alerts */}
+            {session.rawInput.trim().length > 15 && (
+              <div className="space-y-3 animate-fade-in">
+                {/* Contradiction Warning */}
+                {baseline.contradictions.length > 0 && (
+                  <div className="p-3.5 rounded-xl bg-amber-950/30 border border-amber-800/80 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-bold text-amber-300">
+                      <AlertTriangle className="w-4 h-4 text-amber-400" />
+                      <span>Contradiction Detected in Intent</span>
+                    </div>
+                    {baseline.contradictions.map((c) => (
+                      <div key={c.id} className="text-xs text-amber-200/90 pl-6 space-y-1">
+                        <div className="font-semibold text-amber-300">{c.conflictA} vs. {c.conflictB}</div>
+                        <div className="text-[11px] text-amber-400/80">Recommendation: {c.recommendation}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Extracted Known Requirements */}
+                {baseline.knownRequirements.length > 0 && (
+                  <div className="p-3.5 rounded-xl bg-surface-200 border border-slate-800 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                      <FileCheck className="w-4 h-4 text-cyan-400" />
+                      <span>Extracted Known Requirements ({baseline.knownRequirements.length}):</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 pl-6">
+                      {baseline.knownRequirements.map((r) => (
+                        <span key={r.id} className="text-[10px] px-2 py-0.5 rounded font-mono bg-surface-100 border border-slate-700 text-slate-300">
+                          {r.statement}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Target Model Selector */}
             <div className="space-y-2">
@@ -253,21 +346,36 @@ export const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = (
               </div>
             </div>
 
-            {/* Action Button: Start Discovery */}
-            <button
-              onClick={onStartDiscovery}
-              disabled={!session.rawInput.trim()}
-              className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-indigo-600 to-violet-600 hover:from-cyan-400 hover:to-violet-500 text-slate-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-            >
-              <Sparkles className="w-4 h-4 text-slate-950 fill-current" />
-              <span>Analyze Intent & Start Discovery Questionnaire</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            {/* Action Buttons: Fast-Track or Start Discovery */}
+            <div className="space-y-2">
+              <button
+                onClick={onStartDiscovery}
+                disabled={!session.rawInput.trim()}
+                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-indigo-600 to-violet-600 hover:from-cyan-400 hover:to-violet-500 text-slate-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                <Sparkles className="w-4 h-4 text-slate-950 fill-current" />
+                <span>Analyze Intent & Start Discovery Interview</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              {baseline.canFastTrack && (
+                <button
+                  onClick={() => {
+                    onStartDiscovery();
+                    setTimeout(handleOpenArchitecture, 50);
+                  }}
+                  className="w-full py-2 px-3 text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center justify-center gap-1.5"
+                >
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>Fast-Track Simple Prompt (Skip to Architecture)</span>
+                </button>
+              )}
+            </div>
           </div>
         )}
 
         {/* =========================================================
-            STAGE 2: DISCOVERY QUESTIONNAIRE (INTERACTIVE MULTIPLE CHOICE)
+            STAGE 2: DISCOVERY QUESTIONNAIRE (ADAPTIVE INTERVIEW)
         ========================================================= */}
         {session.stage === 'discovery' && (
           <div className="space-y-6 animate-fade-in">
@@ -279,7 +387,7 @@ export const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = (
                     Domain: {session.domain.replace('-', ' ')}
                   </span>
                   <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-indigo-950 text-indigo-300 border border-indigo-800">
-                    Level: {session.level}
+                    Target: {session.level}
                   </span>
                 </div>
                 <button
@@ -292,16 +400,8 @@ export const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = (
               </div>
 
               <p className="text-xs text-slate-300 font-medium">
-                Initial Idea: <span className="text-slate-400 italic font-normal">"{session.rawInput}"</span>
+                Intent: <span className="text-slate-400 italic font-normal">"{session.rawInput}"</span>
               </p>
-            </div>
-
-            {/* Instructions */}
-            <div className="text-xs text-slate-400 flex items-start gap-2">
-              <HelpCircle className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-              <span>
-                To engineer a production-ready prompt, confirm the following requirements. Select the best match or type custom parameters.
-              </span>
             </div>
 
             {/* Questions List */}
@@ -349,7 +449,7 @@ export const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = (
                                   : 'border-slate-600 bg-surface-200'
                               }`}
                             >
-                              {isSelected && <CheckCircle2 className="w-3 h-3 text-slate-950" />}
+                              {isSelected && <Check className="w-3 h-3 text-slate-950" />}
                             </div>
                           </div>
 
@@ -399,19 +499,19 @@ export const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = (
               ))}
             </div>
 
-            {/* Actions */}
+            {/* Actions: Proceed to Architecture Blueprint */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
-                onClick={onCompilePrompt}
-                className="flex-1 py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-400 hover:to-cyan-500 text-slate-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 transition-all"
+                onClick={handleOpenArchitecture}
+                className="flex-1 py-3.5 px-4 rounded-xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-cyan-600 hover:from-indigo-400 hover:to-cyan-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25 transition-all"
               >
-                <Sparkles className="w-4 h-4 fill-current text-slate-950" />
-                <span>Compile Production Prompt ({session.level})</span>
+                <Layers className="w-4 h-4 text-white" />
+                <span>Review Prompt Architecture Schematic</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <button
-                onClick={onResetToDiscovery}
+                onClick={() => onStageChange('input')}
                 className="px-4 py-3 rounded-xl bg-surface-200 border border-slate-800 hover:border-slate-700 text-xs font-medium text-slate-300 hover:text-white transition-colors"
               >
                 Back to Input
@@ -421,7 +521,19 @@ export const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = (
         )}
 
         {/* =========================================================
-            STAGE 3: COMPILED STATE (SUMMARY & QUICK RE-TUNE)
+            STAGE 3: PROMPT ARCHITECTURE SCHEMATIC DESIGNER
+        ========================================================= */}
+        {session.stage === 'architecture' && schematic && (
+          <PromptArchitectureView
+            schematic={schematic}
+            onToggleBlock={handleToggleArchitectureBlock}
+            onProceedToCompile={onCompilePrompt}
+            onBackToDiscovery={() => onStageChange('discovery')}
+          />
+        )}
+
+        {/* =========================================================
+            STAGE 4: COMPILED STATE (SUMMARY & QUICK RE-TUNE)
         ========================================================= */}
         {session.stage === 'compiled' && (
           <div className="space-y-5 animate-fade-in">
@@ -496,16 +608,21 @@ export const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = (
               </div>
             </div>
 
-            {/* Revisit Questionnaire */}
-            <button
-              onClick={() => {
-                // switch back to discovery mode
-                onResetToDiscovery();
-              }}
-              className="w-full py-2.5 px-4 rounded-xl bg-surface-200 hover:bg-surface-100 border border-slate-800 text-xs font-medium text-slate-300 hover:text-white transition-colors"
-            >
-              Modify Discovery Questions & Answers
-            </button>
+            {/* Revisit Questionnaire or Architecture */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => onStageChange('discovery')}
+                className="py-2.5 px-3 rounded-xl bg-surface-200 hover:bg-surface-100 border border-slate-800 text-xs font-medium text-slate-300 hover:text-white transition-colors"
+              >
+                Discovery Questions
+              </button>
+              <button
+                onClick={handleOpenArchitecture}
+                className="py-2.5 px-3 rounded-xl bg-surface-200 hover:bg-surface-100 border border-slate-800 text-xs font-medium text-slate-300 hover:text-white transition-colors"
+              >
+                Architecture Schematic
+              </button>
+            </div>
           </div>
         )}
       </div>

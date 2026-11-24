@@ -302,6 +302,7 @@ export const App: React.FC = () => {
             onApplyAllDefaults={handleApplyAllDefaults}
             onCompilePrompt={handleCompilePrompt}
             onResetToDiscovery={handleResetToDiscovery}
+            onStageChange={(stage) => setSession(prev => ({ ...prev, stage }))}
             userMode={userMode}
           />
         </section>

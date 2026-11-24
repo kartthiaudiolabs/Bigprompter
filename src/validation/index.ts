@@ -85,3 +85,18 @@ export const UpdateProjectSchema = z.object({
   isArchived: z.boolean().optional()
 });
 export type UpdateProjectInput = z.infer<typeof UpdateProjectSchema>;
+
+// Phase 2: Core Prompt Engineering & Architecture Schemas
+export const AnalyzeRequestSchema = z.object({
+  rawInput: z.string().min(3, 'Raw prompt must be at least 3 characters'),
+  domain: DomainCategorySchema.optional()
+});
+export type AnalyzeRequest = z.infer<typeof AnalyzeRequestSchema>;
+
+export const DesignArchitectureRequestSchema = z.object({
+  rawInput: z.string().min(3),
+  domain: DomainCategorySchema,
+  level: EngineeringLevelSchema,
+  targetModel: TargetModelSchema
+});
+export type DesignArchitectureRequest = z.infer<typeof DesignArchitectureRequestSchema>;
