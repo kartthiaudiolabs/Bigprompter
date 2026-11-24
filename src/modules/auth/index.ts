@@ -120,7 +120,7 @@ export class AuthService {
         const fallbackUser: AuthUser = {
           id: 'usr-' + Date.now(),
           email,
-          fullName: email.split('@')[0],
+          fullName: email === 'kartthiaudiolabs@gmail.com' ? 'Kartthi Audio Labs' : email.split('@')[0],
           userMode: 'professional',
           isLocalGuest: true,
           createdAt: new Date().toISOString(),

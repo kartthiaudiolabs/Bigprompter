@@ -10,9 +10,9 @@ interface AuthModalProps {
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess }) => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('kartthiaudiolabs@gmail.com');
+  const [password, setPassword] = useState('Kartthi@786');
+  const [fullName, setFullName] = useState('Kartthi Audio Labs');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +25,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
     try {
       if (mode === 'register') {
-        const user = await AuthService.register(email, password, fullName);
+        const user = await AuthService.register(email, password, fullName || 'Kartthi Audio Labs');
         onAuthSuccess(user);
         onClose();
       } else {
@@ -43,7 +43,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   const handleDemoSignIn = async () => {
     setLoading(true);
     try {
-      const demo = await AuthService.login('engineer@promptexa.ai', 'demo-password');
+      const demo = await AuthService.login('kartthiaudiolabs@gmail.com', 'Kartthi@786');
       onAuthSuccess(demo);
       onClose();
     } finally {
@@ -157,7 +157,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               className="w-full py-2 px-3 rounded-lg bg-surface-300 hover:bg-surface-100 text-slate-300 hover:text-white border border-slate-800 text-xs font-medium flex items-center justify-center gap-2 transition-colors"
             >
               <Sparkles className="w-3 h-3 text-cyan-400" />
-              <span>Instant Local Developer Sign-In (Demo)</span>
+              <span>Instant Sign-In as Kartthi Audio Labs</span>
             </button>
           </div>
         </form>
