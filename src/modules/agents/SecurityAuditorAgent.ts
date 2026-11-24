@@ -44,7 +44,7 @@ export class SecurityAuditorAgent {
 
     // 2. System Prompt Leakage Protection
     const hasLeakProtection =
-      /(never|do\s+not|under\s+no\s+circumstances)\s+.*?(reveal|disclose|leak|repeat|share|output)\s+.*?(instruction|system|internal|prompt)/i.test(text) ||
+      /(never|do\s+not|under\s+no\s+circumstances)\b.*?\b(reveal|disclose|leak|repeat|share|output|summarize)\b.*?\b(instruction|system|internal|prompt)/i.test(text) ||
       /do\s+not\s+share\s+system\s+prompts/i.test(text);
 
     if (!hasLeakProtection && (level === 'L3' || level === 'L4')) {

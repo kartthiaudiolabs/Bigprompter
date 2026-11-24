@@ -19,12 +19,14 @@ import {
   CheckCircle2,
   Activity,
   ArrowRight,
-  Users
+  Users,
+  Award
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PromptProjectSession, PromptVersion } from '../types';
 import { recommendTargetModel, MODEL_CATALOG, ModelProfile } from '@/modules/providers/modelRecommender';
 import { SpecialistAgentReviewPanel } from './SpecialistAgentReviewPanel';
+import { EvaluationSuitePanel } from './EvaluationSuitePanel';
 import { UsageTracker, AggregateUsageStats } from '@/modules/billing/usageTracker';
 
 interface ArtefactStudioProps {
@@ -38,7 +40,7 @@ export const ArtefactStudio: React.FC<ArtefactStudioProps> = ({
   onRestoreVersion,
   apiKey,
 }) => {
-  const [activeTab, setActiveTab] = useState<'prompt' | 'audit' | 'agents' | 'sandbox' | 'models' | 'history' | 'deploy'>('prompt');
+  const [activeTab, setActiveTab] = useState<'prompt' | 'audit' | 'agents' | 'eval' | 'sandbox' | 'models' | 'history' | 'deploy'>('prompt');
   const [viewMode, setViewMode] = useState<'rendered' | 'raw'>('raw');
   const [copied, setCopied] = useState(false);
 
@@ -286,6 +288,16 @@ export const ArtefactStudio: React.FC<ArtefactStudioProps> = ({
           </button>
 
           <button
+            onClick={() => setActiveTab('eval')}
+            className={`pb-2.5 px-3 border-b-2 font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'eval' ? 'border-cyan-400 text-cyan-300' : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Award className="w-3.5 h-3.5 text-rose-400" />
+            Evaluation & Injection Battery
+          </button>
+
+          <button
             onClick={() => setActiveTab('sandbox')}
             className={`pb-2.5 px-3 border-b-2 font-semibold transition-all flex items-center gap-1.5 ${
               activeTab === 'sandbox' ? 'border-cyan-400 text-cyan-300' : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -459,6 +471,21 @@ export const ArtefactStudio: React.FC<ArtefactStudioProps> = ({
         )}
 
         {/* =========================================================
+            TAB: EVALUATION & INJECTION BATTERY (PHASE 5)
+        ========================================================= */}
+        {activeTab === 'eval' && (
+          <div className="flex-1 overflow-y-auto animate-fade-in custom-scrollbar">
+            <EvaluationSuitePanel
+              promptText={compiledPrompt}
+              sampleOutput={streamedOutput}
+              domain={session.domain}
+              level={session.level}
+              apiKey={apiKey}
+            />
+          </div>
+        )}
+
+        {/* =========================================================
             TAB 3: LIVE STREAMING TEST SANDBOX (PHASE 3)
         ========================================================= */}
         {activeTab === 'sandbox' && (
@@ -545,6 +572,18 @@ export const ArtefactStudio: React.FC<ArtefactStudioProps> = ({
                   {streamedOutput}
                   {sandboxRunning && <span className="inline-block w-2 h-4 ml-1 bg-cyan-400 animate-pulse" />}
                 </div>
+
+                {!sandboxRunning && streamedOutput && (
+                  <div className="pt-2 flex items-center justify-end">
+                    <button
+                      onClick={() => setActiveTab('eval')}
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-slate-950 border border-rose-500/40 transition-all flex items-center gap-1.5"
+                    >
+                      <Award className="w-3.5 h-3.5" />
+                      Evaluate Output in Rubric Suite →
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
