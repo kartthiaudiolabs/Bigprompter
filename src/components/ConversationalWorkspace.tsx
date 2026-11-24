@@ -198,7 +198,7 @@ export const ConversationalWorkspace: React.FC<ConversationalWorkspaceProps> = (
                 What prompt or agent do you want to engineer?
               </h2>
               <p className="text-xs text-slate-400 mt-1">
-                Bring any rough idea, task description, or raw draft. Promptexa will analyze intent, discover missing requirements, and compile it to production grade.
+                Bring any rough idea, task description, or raw draft. BIG PROMPTER will analyze intent, discover missing requirements, and compile it to production grade.
               </p>
             </div>
 

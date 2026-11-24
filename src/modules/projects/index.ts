@@ -27,7 +27,7 @@ export interface Project {
   updatedAt: string;
 }
 
-const LOCAL_STORAGE_PROJECTS_KEY = 'promptexa_projects_store';
+const LOCAL_STORAGE_PROJECTS_KEY = 'big_prompter_projects_store';
 
 export class ProjectService {
   private static getStore(): Project[] {

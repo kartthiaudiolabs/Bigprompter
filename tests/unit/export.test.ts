@@ -95,7 +95,7 @@ describe('Deployment & Export Engine Suite (Phase 6)', () => {
       expect(bundle.filename).toBe('payment_gateway_spec_v1.json');
       expect(bundle.mimeType).toBe('application/json');
       const parsed = JSON.parse(bundle.content);
-      expect(parsed.schema_version).toBe('promptexa/v1');
+      expect(parsed.schema_version).toBe('big_prompter/v1');
       expect(parsed.metadata.title).toBe('Payment Gateway Spec');
       expect(parsed.config.temperature).toBe(0.2);
     });

@@ -9,7 +9,7 @@ export class SDKGenerator {
       streaming = false,
       temperature = 0.2,
       maxTokens = 4096,
-      promptName = 'promptexa_task',
+      promptName = 'big_prompter_task',
       modelName,
     } = options;
 
@@ -40,7 +40,7 @@ export class SDKGenerator {
     const code = `import { NextRequest } from 'next/server';
 import ${targetSdk === 'anthropic' ? "Anthropic from '@anthropic-ai/sdk'" : targetSdk === 'openai' ? "OpenAI from 'openai'" : "{ GoogleGenAI } from '@google/genai'"};
 
-// Production Promptexa Edge Handler with Server-Sent Events (SSE) Streaming
+// Production Big Prompter Edge Handler with Server-Sent Events (SSE) Streaming
 export const runtime = 'edge';
 
 const SYSTEM_PROMPT = ${JSON.stringify(promptText)};
@@ -221,11 +221,11 @@ export async function POST(req: NextRequest) {
     };
   }
 
-  generateLangChainYAML(promptText: string, promptName: string = 'promptexa_pipeline'): GeneratedCodeArtifact {
-    const yaml = `# Promptexa LangChain & PromptFoo Pipeline Manifest
+  generateLangChainYAML(promptText: string, promptName: string = 'big_prompter_pipeline'): GeneratedCodeArtifact {
+    const yaml = `# Big Prompter LangChain & PromptFoo Pipeline Manifest
 name: "${promptName}"
 version: "1.0.0"
-description: "Compiled L4 Production Prompt engineered with Promptexa"
+description: "Compiled L4 Production Prompt engineered with Big Prompter"
 
 prompts:
   - id: "${promptName}_v1"
@@ -286,7 +286,7 @@ tests:
       code = `import Anthropic from '@anthropic-ai/sdk';
 
 /**
- * Promptexa Generated Production Client for Anthropic Claude
+ * Big Prompter Generated Production Client for Anthropic Claude
  */
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -342,7 +342,7 @@ if (require.main === module) {
       code = `import OpenAI from 'openai';
 
 /**
- * Promptexa Generated Production Client for OpenAI
+ * Big Prompter Generated Production Client for OpenAI
  */
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -394,7 +394,7 @@ if (require.main === module) {
       code = `import { GoogleGenAI } from '@google/genai';
 
 /**
- * Promptexa Generated Production Client for Google Gemini
+ * Big Prompter Generated Production Client for Google Gemini
  */
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -478,7 +478,7 @@ client = anthropic.Anthropic(
 COMPILED_PROMPT = ${JSON.stringify(promptText)}
 
 def execute_prompt(user_input: str) -> str:
-    """Executes the Promptexa engineered prompt against Claude."""
+    """Executes the Big Prompter engineered prompt against Claude."""
     full_prompt = f"{COMPILED_PROMPT}\\n\\n<untrusted_user_input>\\n{user_input}\\n</untrusted_user_input>"
 
     ${
@@ -522,7 +522,7 @@ client = OpenAI(
 COMPILED_PROMPT = ${JSON.stringify(promptText)}
 
 def execute_prompt(user_input: str) -> str:
-    """Executes the Promptexa engineered prompt against OpenAI."""
+    """Executes the Big Prompter engineered prompt against OpenAI."""
     full_prompt = f"{COMPILED_PROMPT}\\n\\n<untrusted_user_input>\\n{user_input}\\n</untrusted_user_input>"
 
     ${
@@ -568,7 +568,7 @@ client = genai.Client(
 COMPILED_PROMPT = ${JSON.stringify(promptText)}
 
 def execute_prompt(user_input: str) -> str:
-    """Executes the Promptexa engineered prompt against Google Gemini."""
+    """Executes the Big Prompter engineered prompt against Google Gemini."""
     full_prompt = f"{COMPILED_PROMPT}\\n\\n<untrusted_user_input>\\n{user_input}\\n</untrusted_user_input>"
 
     ${

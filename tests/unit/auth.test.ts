@@ -11,7 +11,7 @@ describe('Auth Module & Schemas', () => {
 
   it('should validate correct registration payload', () => {
     const valid = RegisterRequestSchema.safeParse({
-      email: 'engineer@promptexa.ai',
+      email: 'engineer@bigprompter.ai',
       password: 'strongPassword123',
       fullName: 'Principal Architect',
     });
@@ -20,7 +20,7 @@ describe('Auth Module & Schemas', () => {
 
   it('should reject short passwords under 6 characters', () => {
     const invalid = RegisterRequestSchema.safeParse({
-      email: 'engineer@promptexa.ai',
+      email: 'engineer@bigprompter.ai',
       password: '123',
       fullName: 'Principal Architect',
     });
@@ -29,7 +29,7 @@ describe('Auth Module & Schemas', () => {
 
   it('should validate login request payload', () => {
     const valid = LoginRequestSchema.safeParse({
-      email: 'engineer@promptexa.ai',
+      email: 'engineer@bigprompter.ai',
       password: 'securePassword',
     });
     expect(valid.success).toBe(true);

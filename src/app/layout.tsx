@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import '../index.css';
 
 export const metadata: Metadata = {
-  title: 'BIG PROMPTER (Promptexa) — Multi-Model AI Prompt Engineering OS',
+  title: 'BIG PROMPTER — Multi-Model AI Prompt Engineering OS',
   description: 'You bring the idea. BIG PROMPTER engineers the prompt. L1–L4 production prompt engineering platform.',
 };
 

@@ -19,7 +19,7 @@ export interface AggregateUsageStats {
   providerBreakdown: Record<string, { calls: number; costUSD: number; tokens: number }>;
 }
 
-const LOCAL_STORAGE_USAGE_KEY = 'promptexa_usage_events';
+const LOCAL_STORAGE_USAGE_KEY = 'big_prompter_usage_events';
 
 export class UsageTracker {
   private static inMemoryStore: UsageRecord[] = [];

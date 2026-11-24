@@ -4,7 +4,7 @@ import { exportService } from '@/modules/export';
 
 const ExportSchema = z.object({
   promptText: z.string().min(1, 'Prompt text is required for export'),
-  title: z.string().default('Promptexa Prompt'),
+  title: z.string().default('Big Prompter Prompt'),
   version: z.number().default(1),
   level: z.string().default('L3'),
   domain: z.string().default('software'),

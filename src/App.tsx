@@ -49,7 +49,7 @@ export const App: React.FC = () => {
   const [userMode, setUserMode] = useState<UserMode>('professional');
   const [apiKey, setApiKey] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('promptexa_gemini_api_key') || '';
+      return localStorage.getItem('big_prompter_gemini_api_key') || '';
     }
     return '';
   });
@@ -78,7 +78,7 @@ export const App: React.FC = () => {
   // Core Session State
   const [session, setSession] = useState<PromptProjectSession>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('promptexa_active_session');
+      const saved = localStorage.getItem('big_prompter_active_session');
       if (saved) {
         try {
           return JSON.parse(saved);
@@ -106,12 +106,12 @@ export const App: React.FC = () => {
 
   // Save to localStorage
   useEffect(() => {
-    localStorage.setItem('promptexa_active_session', JSON.stringify(session));
+    localStorage.setItem('big_prompter_active_session', JSON.stringify(session));
   }, [session]);
 
   const handleSaveApiKey = (key: string) => {
     setApiKey(key);
-    localStorage.setItem('promptexa_gemini_api_key', key);
+    localStorage.setItem('big_prompter_gemini_api_key', key);
   };
 
   const handleRawInputChange = (text: string) => {

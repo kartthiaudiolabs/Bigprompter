@@ -28,7 +28,7 @@ level: "${level}"
 domain: "${domain}"
 target_model: "${targetModel}"
 exported_at: "${new Date().toISOString()}"
-system: "Promptexa OS v1.0"
+system: "Big Prompter OS v1.0"
 ---
 
 # ${title} (Level ${level})
@@ -44,7 +44,7 @@ ${promptText}
 
       case 'json': {
         const jsonPayload = {
-          schema_version: 'promptexa/v1',
+          schema_version: 'big_prompter/v1',
           metadata: {
             title,
             version,

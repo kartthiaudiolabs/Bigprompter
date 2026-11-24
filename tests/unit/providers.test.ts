@@ -18,7 +18,7 @@ describe('AI Provider Abstraction Layer', () => {
     });
 
     expect(result.status).toBe('fallback');
-    expect(result.outputText).toContain('PROMPTEXA TEST RUNNER');
+    expect(result.outputText).toContain('BIG PROMPTER TEST RUNNER');
     expect(result.totalTokens).toBeGreaterThan(0);
     expect(result.latencyMs).toBeGreaterThanOrEqual(0);
   });

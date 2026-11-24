@@ -78,7 +78,7 @@ export const ArtefactStudio: React.FC<ArtefactStudioProps> = ({
   const handleDownload = (format: 'md' | 'json') => {
     if (!compiledPrompt) return;
     let content = compiledPrompt;
-    let filename = `promptexa-${session.level.toLowerCase()}-${session.targetModel}.md`;
+    let filename = `big-prompter-${session.level.toLowerCase()}-${session.targetModel}.md`;
     let type = 'text/markdown';
 
     if (format === 'json') {
@@ -94,7 +94,7 @@ export const ArtefactStudio: React.FC<ArtefactStudioProps> = ({
         },
       };
       content = JSON.stringify(jsonObj, null, 2);
-      filename = `promptexa-${session.level.toLowerCase()}-${session.targetModel}.json`;
+      filename = `big-prompter-${session.level.toLowerCase()}-${session.targetModel}.json`;
       type = 'application/json';
     }
 

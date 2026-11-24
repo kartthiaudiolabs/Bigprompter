@@ -9,8 +9,8 @@ export interface AuthUser {
   createdAt: string;
 }
 
-const LOCAL_STORAGE_USER_KEY = 'promptexa_auth_user';
-const LOCAL_STORAGE_USERS_DB = 'promptexa_registered_users';
+const LOCAL_STORAGE_USER_KEY = 'big_prompter_auth_user';
+const LOCAL_STORAGE_USERS_DB = 'big_prompter_registered_users';
 
 export class AuthService {
   static getStoredUser(): AuthUser | null {

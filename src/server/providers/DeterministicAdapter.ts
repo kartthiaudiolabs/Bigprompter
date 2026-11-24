@@ -24,12 +24,12 @@ export class DeterministicAdapter implements AIProvider {
     const latencyMs = Date.now() - startTime;
 
     const inputSnippet = request.prompt.slice(0, 80).replace(/\n/g, ' ');
-    const outputText = `### [PROMPTEXA TEST RUNNER: DETERMINISTIC VERIFICATION OUTPUT]
+    const outputText = `### [BIG PROMPTER TEST RUNNER: DETERMINISTIC VERIFICATION OUTPUT]
 Status: 200 OK | Isolated Execution Container
 
 #### Execution Analysis:
 - Ingested Input: "${inputSnippet}..."
-- Target Protocol: Senior Prompt Engineer Runtime
+- Target Protocol: Big Prompter Senior Prompt Engineer Runtime
 - Constraints Adhered: Strict schema, zero-hallucination boundaries, untrusted input isolation.
 
 #### Executed Output:
@@ -52,7 +52,7 @@ Status: 200 OK | Isolated Execution Container
       totalTokens: inputTokens + outputTokens,
       latencyMs,
       provider: 'deterministic',
-      model: 'promptexa-deterministic-v1',
+      model: 'big-prompter-deterministic-v1',
       cost: {
         estimatedCostUSD: 0,
         inputTokens,

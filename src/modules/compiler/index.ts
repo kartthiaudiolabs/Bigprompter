@@ -97,7 +97,7 @@ ${components.outputContract}
 `;
   } else if (level === 'L2') {
     compiledPrompt = `<!-- ==========================================
-  PROMPTEXA PRODUCTION PROMPT (LEVEL 2: ADVANCED)
+  BIG PROMPTER PRODUCTION PROMPT (LEVEL 2: ADVANCED)
   Target Model: ${targetModel.toUpperCase()}
 ========================================== -->
 
@@ -134,7 +134,7 @@ Please process the following input payload strictly according to the specificati
 `;
   } else if (level === 'L3') {
     compiledPrompt = `<!-- ==============================================================
-  PROMPTEXA PRODUCTION PROMPT ENGINE (LEVEL 3: PROFESSIONAL)
+  BIG PROMPTER PRODUCTION PROMPT ENGINE (LEVEL 3: PROFESSIONAL)
   Architecture: High-Fidelity Requirement Architecture & Workflow
   Target Model: ${targetModel.toUpperCase()}
 ============================================================== -->
@@ -198,14 +198,14 @@ ${components.acceptanceCriteria.map(a => `- [ ] ${a}`).join('\n')}
     const isDeepSeek = targetModel === 'deepseek-r1';
 
     compiledPrompt = `<!-- =========================================================================
-  PROMPTEXA PRODUCTION OPERATING SYSTEM — LEVEL 4 (FULL PRODUCTION)
+  BIG PROMPTER PRODUCTION OPERATING SYSTEM — LEVEL 4 (FULL PRODUCTION)
   Engineered for High-Reliability Automated & Agentic Pipelines
   Target Architecture: ${targetModel.toUpperCase()}
   Safety Grade: Enterprise Isolated
 ========================================================================= -->
 
 <agent_manifest>
-  <name>PromptexaEngineeredAgent</name>
+  <name>BigPrompterEngineeredAgent</name>
   <level>L4_PRODUCTION</level>
   <target_model>${targetModel}</target_model>
   <security_protocol>ISOLATED_SANDBOX_V1</security_protocol>

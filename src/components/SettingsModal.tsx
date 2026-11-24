@@ -53,7 +53,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <span>Zero-Setup Local Intelligence Included</span>
             </div>
             <p className="text-slate-400 leading-relaxed">
-              Promptexa works out of the box using its built-in Senior Prompt Engineering Heuristics. Adding a Google Gemini API Key enables live sandbox execution and dynamic API testing.
+              BIG PROMPTER works out of the box using its built-in Senior Prompt Engineering Heuristics. Adding a Google Gemini API Key enables live sandbox execution and dynamic API testing.
             </p>
           </div>
 
