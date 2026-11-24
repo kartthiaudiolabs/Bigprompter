@@ -27,6 +27,7 @@ import { PromptProjectSession, PromptVersion } from '../types';
 import { recommendTargetModel, MODEL_CATALOG, ModelProfile } from '@/modules/providers/modelRecommender';
 import { SpecialistAgentReviewPanel } from './SpecialistAgentReviewPanel';
 import { EvaluationSuitePanel } from './EvaluationSuitePanel';
+import { DeployStudioPanel } from './DeployStudioPanel';
 import { UsageTracker, AggregateUsageStats } from '@/modules/billing/usageTracker';
 
 interface ArtefactStudioProps {
@@ -741,60 +742,15 @@ export const ArtefactStudio: React.FC<ArtefactStudioProps> = ({
             TAB 6: DEPLOY & SDK SNIPPETS
         ========================================================= */}
         {activeTab === 'deploy' && (
-          <div className="space-y-4 animate-fade-in">
-            <h4 className="text-xs font-bold font-mono tracking-wider text-slate-400 uppercase">
-              Production Code Integration Snippets
-            </h4>
-
-            {/* Google Gemini SDK */}
-            <div className="rounded-xl bg-surface-200 border border-slate-800 overflow-hidden">
-              <div className="px-4 py-2 border-b border-slate-800 bg-surface-100 flex items-center justify-between text-xs">
-                <span className="font-mono font-semibold text-cyan-300">Google Gemini (@google/genai TypeScript)</span>
-              </div>
-              <pre className="p-4 font-mono text-[11px] text-slate-300 overflow-x-auto">
-{`import { GoogleGenAI } from '@google/genai';
-
-const ai = new GoogleGenAI();
-
-const systemInstruction = \`${compiledPrompt.replace(/`/g, '\\`')}\`;
-
-const response = await ai.models.generateContent({
-  model: '${session.targetModel === 'gemini-2-5-pro' ? 'gemini-2.5-pro' : 'gemini-2.5-flash'}',
-  config: {
-    systemInstruction,
-    temperature: 0.2,
-  },
-  contents: 'Process input payload...',
-});
-
-console.log(response.text);`}
-              </pre>
-            </div>
-
-            {/* Anthropic Claude SDK */}
-            <div className="rounded-xl bg-surface-200 border border-slate-800 overflow-hidden">
-              <div className="px-4 py-2 border-b border-slate-800 bg-surface-100 flex items-center justify-between text-xs">
-                <span className="font-mono font-semibold text-indigo-300">Anthropic Claude SDK (Python)</span>
-              </div>
-              <pre className="p-4 font-mono text-[11px] text-slate-300 overflow-x-auto">
-{`import anthropic
-
-client = anthropic.Anthropic()
-
-system_prompt = """${compiledPrompt.replace(/"""/g, '\"\"\"')}"""
-
-message = client.messages.create(
-    model="claude-3-7-sonnet-20250219",
-    max_tokens=4096,
-    temperature=0.2,
-    system=system_prompt,
-    messages=[
-        {"role": "user", "content": "{{USER_INPUT}}"}
-    ]
-)
-print(message.content[0].text)`}
-              </pre>
-            </div>
+          <div className="flex-1 overflow-y-auto animate-fade-in custom-scrollbar">
+            <DeployStudioPanel
+              promptText={compiledPrompt}
+              promptTitle={session.title}
+              versionNumber={currentVersion.versionNumber}
+              level={session.level}
+              domain={session.domain}
+              defaultModel={session.targetModel}
+            />
           </div>
         )}
       </div>
