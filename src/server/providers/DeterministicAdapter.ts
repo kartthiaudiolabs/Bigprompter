@@ -1,4 +1,4 @@
-import { AIProvider, GenerationRequest, GenerationResult, CostEstimate } from './types';
+import { AIProvider, GenerationRequest, GenerationResult, GenerationChunk, CostEstimate } from './types';
 
 export class DeterministicAdapter implements AIProvider {
   readonly providerId = 'deterministic' as const;
@@ -20,7 +20,6 @@ export class DeterministicAdapter implements AIProvider {
 
   async generate(request: GenerationRequest): Promise<GenerationResult> {
     const startTime = Date.now();
-    // Simulate brief processing latency
     await new Promise((resolve) => setTimeout(resolve, 80));
     const latencyMs = Date.now() - startTime;
 
@@ -62,5 +61,20 @@ Status: 200 OK | Isolated Execution Container
       },
       status: 'fallback',
     };
+  }
+
+  async *stream(request: GenerationRequest): AsyncIterable<GenerationChunk> {
+    const fullResult = await this.generate(request);
+    const words = fullResult.outputText.split(' ');
+
+    let currentTokens = 0;
+    for (let i = 0; i < words.length; i += 4) {
+      const chunkWords = words.slice(i, i + 4).join(' ') + ' ';
+      currentTokens += Math.round(chunkWords.length / 4) || 1;
+      await new Promise(r => setTimeout(r, 20)); // simulated token stream rate
+      yield { text: chunkWords, isComplete: false, tokensStreamed: currentTokens };
+    }
+
+    yield { text: '', isComplete: true, tokensStreamed: currentTokens };
   }
 }

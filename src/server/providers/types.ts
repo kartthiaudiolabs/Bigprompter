@@ -1,3 +1,9 @@
+export interface GenerationChunk {
+  text: string;
+  isComplete: boolean;
+  tokensStreamed?: number;
+}
+
 export interface GenerationRequest {
   prompt: string;
   systemInstruction?: string;
@@ -29,6 +35,7 @@ export interface GenerationResult {
 export interface AIProvider {
   readonly providerId: 'google' | 'anthropic' | 'openai' | 'deterministic';
   generate(request: GenerationRequest): Promise<GenerationResult>;
+  stream(request: GenerationRequest): AsyncIterable<GenerationChunk>;
   estimateCost(request: GenerationRequest): Promise<CostEstimate>;
   validateConfiguration(): Promise<boolean>;
 }
