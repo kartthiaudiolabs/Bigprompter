@@ -245,17 +245,18 @@ export const App: React.FC = () => {
     setSession(emptySession);
   };
 
-  const handleSelectTemplate = (template: StarterTemplate) => {
-    const domain = template.category;
-    const questions = generateDiscoveryQuestions(template.rawIdea, domain);
+  const handleSelectTemplate = (template: any, instantiatedText?: string) => {
+    const domain = template.domain || template.category || 'software';
+    const inputPayload = instantiatedText || template.rawPromptTemplate || template.rawIdea || '';
+    const questions = generateDiscoveryQuestions(inputPayload, domain);
 
     setSession({
       id: 'session-' + Date.now(),
       title: template.title,
-      rawInput: template.rawIdea,
+      rawInput: inputPayload,
       domain,
-      level: template.recommendedLevel,
-      targetModel: template.recommendedModel,
+      level: template.level || template.recommendedLevel || 'L3',
+      targetModel: template.recommendedModel || 'claude-3-7-sonnet',
       userMode: userMode,
       stage: 'discovery',
       questions,

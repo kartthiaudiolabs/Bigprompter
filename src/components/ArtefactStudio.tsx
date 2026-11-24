@@ -18,11 +18,13 @@ import {
   Layers,
   CheckCircle2,
   Activity,
-  ArrowRight
+  ArrowRight,
+  Users
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { PromptProjectSession, PromptVersion } from '../types';
 import { recommendTargetModel, MODEL_CATALOG, ModelProfile } from '@/modules/providers/modelRecommender';
+import { SpecialistAgentReviewPanel } from './SpecialistAgentReviewPanel';
 import { UsageTracker, AggregateUsageStats } from '@/modules/billing/usageTracker';
 
 interface ArtefactStudioProps {
@@ -36,7 +38,7 @@ export const ArtefactStudio: React.FC<ArtefactStudioProps> = ({
   onRestoreVersion,
   apiKey,
 }) => {
-  const [activeTab, setActiveTab] = useState<'prompt' | 'audit' | 'sandbox' | 'models' | 'history' | 'deploy'>('prompt');
+  const [activeTab, setActiveTab] = useState<'prompt' | 'audit' | 'agents' | 'sandbox' | 'models' | 'history' | 'deploy'>('prompt');
   const [viewMode, setViewMode] = useState<'rendered' | 'raw'>('raw');
   const [copied, setCopied] = useState(false);
 
@@ -274,6 +276,16 @@ export const ArtefactStudio: React.FC<ArtefactStudioProps> = ({
           </button>
 
           <button
+            onClick={() => setActiveTab('agents')}
+            className={`pb-2.5 px-3 border-b-2 font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'agents' ? 'border-cyan-400 text-cyan-300' : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5 text-indigo-400" />
+            Specialist Agents & Consensus
+          </button>
+
+          <button
             onClick={() => setActiveTab('sandbox')}
             className={`pb-2.5 px-3 border-b-2 font-semibold transition-all flex items-center gap-1.5 ${
               activeTab === 'sandbox' ? 'border-cyan-400 text-cyan-300' : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -429,6 +441,20 @@ export const ArtefactStudio: React.FC<ArtefactStudioProps> = ({
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* =========================================================
+            TAB: SPECIALIST AGENTS & CONSENSUS REVIEW (PHASE 4)
+        ========================================================= */}
+        {activeTab === 'agents' && (
+          <div className="flex-1 overflow-y-auto animate-fade-in custom-scrollbar">
+            <SpecialistAgentReviewPanel
+              promptText={compiledPrompt}
+              domain={session.domain}
+              level={session.level}
+              targetModel={session.targetModel}
+            />
           </div>
         )}
 
