@@ -1,5 +1,5 @@
 -- =============================================================================
--- BIG PROMPTER (PROMPTEXA) — DATABASE SCHEMA INITIAL MIGRATION
+-- BIG PROMPTER — DATABASE SCHEMA INITIAL MIGRATION
 -- Migration Version: 20261124000000_initial_schema.sql
 -- Specification: Master Product Blueprint v1.0 (Part 7)
 -- =============================================================================

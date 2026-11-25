@@ -1,7 +1,7 @@
 # BIG PROMPTER — PRODUCT REQUIREMENTS DOCUMENT (PRD) v1.0
 
 ## 1. Product Identification
-- **Product Name:** BIG PROMPTER (Promptexa)
+- **Product Name:** BIG PROMPTER
 - **Tagline:** Think Bigger. Prompt Better.
 - **Product Promise:** You bring the idea. BIG PROMPTER engineers the prompt.
 - **Category:** Multi-Model AI Prompt Engineering & Prompt-to-Production Operating System
